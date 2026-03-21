@@ -40,8 +40,9 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
 # Configure PHP-FPM pool to listen on all interfaces (required for nginx in separate container)
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
-# Override zz-docker.conf (loaded last alphabetically) to preserve 0.0.0.0:9000 listen address
-RUN sed -i 's/listen = 9000/listen = 0.0.0.0:9000/' /usr/local/etc/php-fpm.d/zz-docker.conf
+# Directly overwrite zz-docker.conf (loaded last alphabetically) to guarantee 0.0.0.0:9000
+# The sed approach is fragile; a direct COPY is reliable regardless of base image whitespace.
+COPY docker/php/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # Copy entrypoint script
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
