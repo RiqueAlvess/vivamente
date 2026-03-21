@@ -124,6 +124,14 @@ docker compose exec -T app php artisan route:cache || true
 docker compose exec -T app php artisan view:cache || true
 ok "Cache gerado"
 
+# ── Fix permissions ───────────────────────────────────────────
+# Artisan commands run as root via docker compose exec, which can leave files
+# in storage/ and bootstrap/cache/ owned by root. Fix so www-data (PHP-FPM) can write.
+log "Corrigindo permissões de storage e cache..."
+docker compose exec -T app chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+docker compose exec -T app chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+ok "Permissões corrigidas"
+
 # ── Sumário ───────────────────────────────────────────────────
 header "Setup Concluído!"
 
