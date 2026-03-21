@@ -55,4 +55,5 @@ WORKDIR /var/www
 EXPOSE 9000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["php-fpm"]
+# -F forces foreground mode regardless of daemonize setting in any conf file
+CMD ["php-fpm", "-F"]

@@ -17,3 +17,6 @@ yarn-error.log
 /.idea
 /.vscode
 *.log
+
+# Bootstrap cache — gerado em runtime por artisan, nunca deve ser versionado
+/bootstrap/cache/*.php
