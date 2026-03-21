@@ -46,16 +46,23 @@ foreach (config('tenancy.central_domains') as $domain) {
             ]);
 
             // Users
-            Route::resource('users', CentralUserController::class)->names([
-                'index'   => 'central.users.index',
-                'create'  => 'central.users.create',
-                'store'   => 'central.users.store',
-                'show'    => 'central.users.show',
-                'edit'    => 'central.users.edit',
-                'update'  => 'central.users.update',
-                'destroy' => 'central.users.destroy',
-            ]);
-            Route::post('/users/{user}/toggle-block', [CentralUserController::class, 'toggleBlock'])
+            Route::resource('users', CentralUserController::class)
+                ->only(['index', 'create', 'store'])
+                ->names([
+                    'index'  => 'central.users.index',
+                    'create' => 'central.users.create',
+                    'store'  => 'central.users.store',
+                ]);
+            Route::get('/users/{tenantId}/{userId}', [CentralUserController::class, 'show'])
+                ->name('central.users.show');
+            Route::get('/users/{tenantId}/{userId}/edit', [CentralUserController::class, 'edit'])
+                ->name('central.users.edit');
+            Route::put('/users/{tenantId}/{userId}', [CentralUserController::class, 'update'])
+                ->name('central.users.update');
+            Route::patch('/users/{tenantId}/{userId}', [CentralUserController::class, 'update']);
+            Route::delete('/users/{tenantId}/{userId}', [CentralUserController::class, 'destroy'])
+                ->name('central.users.destroy');
+            Route::post('/users/{tenantId}/{userId}/toggle-block', [CentralUserController::class, 'toggleBlock'])
                 ->name('central.users.toggle-block');
         });
     });

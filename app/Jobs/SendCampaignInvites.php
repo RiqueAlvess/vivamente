@@ -21,7 +21,6 @@ class SendCampaignInvites implements ShouldQueue
     public int $timeout = 300;
 
     public function __construct(
-        private readonly int $campaignId,
         private readonly array $inviteIds,
         private readonly string $tenantId,
     ) {}
