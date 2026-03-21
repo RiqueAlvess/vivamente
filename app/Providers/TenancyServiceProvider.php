@@ -73,7 +73,7 @@ class TenancyServiceProvider extends ServiceProvider
         foreach ($this->events() as $event => $listeners) {
             foreach (array_unique($listeners) as $listener) {
                 if ($listener instanceof JobPipeline) {
-                    Event::subscribe($listener->toListener());
+                    Event::listen($event, $listener->toListener());
                 } else {
                     Event::listen($event, $listener);
                 }
