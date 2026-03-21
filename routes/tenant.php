@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Auth routes
-Route::middleware('guest')->group(function () {
+Route::middleware('guest:tenant')->group(function () {
     Route::get('/login', [TenantLoginController::class, 'showLoginForm'])->name('tenant.login');
     Route::post('/login', [TenantLoginController::class, 'login'])->middleware('throttle:login');
     Route::get('/forgot-password', [TenantForgotPasswordController::class, 'showForm'])->name('tenant.password.request');
@@ -31,7 +31,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [TenantLoginController::class, 'logout'])
     ->name('tenant.logout')
-    ->middleware('auth');
+    ->middleware('auth:tenant');
 
 // Public survey route (no auth needed)
 Route::get('/pesquisa/{token}', [SurveyController::class, 'show'])->name('tenant.survey.show');
@@ -39,7 +39,7 @@ Route::post('/pesquisa/{token}/consent', [SurveyController::class, 'consent'])->
 Route::post('/pesquisa/{token}/submit', [SurveyController::class, 'submit'])->name('tenant.survey.submit');
 
 // Protected tenant routes
-Route::middleware(['auth', 'tenant.auth'])->group(function () {
+Route::middleware(['auth:tenant', 'tenant.auth'])->group(function () {
     Route::get('/', [TenantDashboardController::class, 'index'])->name('tenant.dashboard');
 
     // Routes accessible by rh only

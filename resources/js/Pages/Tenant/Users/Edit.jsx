@@ -45,7 +45,7 @@ export default function Edit({ user, availableHierarchies }) {
                     </div>
                     <div>
                         <label className="label">E-mail</label>
-                        <input type="email" className="input" value={user.email} disabled className="input bg-gray-50 text-gray-500" />
+                        <input type="email" className="input bg-gray-50 text-gray-500" value={user.email} disabled />
                     </div>
                     <div>
                         <label className="label">Role</label>
