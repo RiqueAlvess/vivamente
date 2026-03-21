@@ -1,0 +1,62 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: nr1_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+      - redis
+    networks:
+      - nr1_network
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nr1_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - nr1_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: nr1_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - nr1_network
+
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: nr1_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+      - redis
+    networks:
+      - nr1_network
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+
+networks:
+  nr1_network:
+    driver: bridge
