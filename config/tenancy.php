@@ -67,7 +67,9 @@ return [
     'features' => [
         // Stancl\Tenancy\Features\UserImpersonation::class,
         // Stancl\Tenancy\Features\TelescopeTags::class,
-        Stancl\Tenancy\Features\UniversalRoutes::class,
+        // UniversalRoutes disabled: it makes central routes accessible from tenant domains,
+        // causing collisions between /login central and /login tenant.
+        // Stancl\Tenancy\Features\UniversalRoutes::class,
         // Stancl\Tenancy\Features\TenantConfig::class,
         // Stancl\Tenancy\Features\CrossDomainRedirect::class,
     ],

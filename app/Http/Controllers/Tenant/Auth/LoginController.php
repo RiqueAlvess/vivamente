@@ -39,6 +39,9 @@ class LoginController extends Controller
 
         if (! $user || ! \Hash::check($request->password, $user->password)) {
             RateLimiter::hit($key, 60);
+            if ($user) {
+                $user->incrementLoginAttempts();
+            }
             return back()->withErrors(['email' => 'Credenciais inválidas.']);
         }
 
