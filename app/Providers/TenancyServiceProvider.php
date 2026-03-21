@@ -84,18 +84,17 @@ class TenancyServiceProvider extends ServiceProvider
     protected function mapRoutes(): void
     {
         if (file_exists(base_path('routes/tenant.php'))) {
-            Route::group([], base_path('routes/tenant.php'));
+            Route::middleware([
+                'web',
+                Middleware\PreventAccessFromCentralDomains::class,
+                Middleware\InitializeTenancyByDomain::class,
+            ])->group(base_path('routes/tenant.php'));
         }
     }
 
     protected function makeTenancyMiddlewareHighestPriority(): void
     {
-        $tenancyMiddleware = [
-            Middleware\InitializeTenancyByDomain::class,
-        ];
-
-        foreach (array_reverse($tenancyMiddleware) as $middleware) {
-            app(\Illuminate\Contracts\Http\Kernel::class)->prependMiddlewareToGroup('web', $middleware);
-        }
+        // Intentionally empty — tenancy middleware is applied directly in mapRoutes()
+        // so it only runs for tenant domain requests, not for central domains.
     }
 }
