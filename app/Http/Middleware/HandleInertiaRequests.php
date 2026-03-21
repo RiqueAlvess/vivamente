@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -20,7 +21,9 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => tenancy()->initialized
+                    ? Auth::guard('tenant')->user()
+                    : $request->user(),
             ],
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),

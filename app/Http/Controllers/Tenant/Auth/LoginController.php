@@ -53,7 +53,7 @@ class LoginController extends Controller
         $user->resetLoginAttempts();
         RateLimiter::clear($key);
 
-        Auth::login($user, $request->boolean('remember'));
+        Auth::guard('tenant')->login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
         return redirect()->intended(route('tenant.dashboard'));
@@ -61,7 +61,7 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        Auth::guard('tenant')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

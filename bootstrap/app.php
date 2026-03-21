@@ -29,6 +29,14 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return route('tenant.login');
         });
+
+        $middleware->redirectUsersTo(function ($request) {
+            $centralDomains = config('tenancy.central_domains', ['localhost']);
+            if (in_array($request->getHost(), $centralDomains)) {
+                return route('central.dashboard');
+            }
+            return route('tenant.dashboard');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
