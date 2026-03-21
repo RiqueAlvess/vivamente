@@ -10,7 +10,9 @@ mkdir -p /var/www/storage/app/public
 mkdir -p /var/www/bootstrap/cache
 
 # Fix ownership and permissions so www-data (PHP-FPM) can write
-chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# chown may fail in rootless Docker environments, so we fall back to world-writable chmod
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || \
+    chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 exec "$@"
