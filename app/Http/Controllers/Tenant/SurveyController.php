@@ -18,7 +18,7 @@ class SurveyController extends Controller
             ->where('token', $token)
             ->first();
 
-        if (! $invite || ! $invite->campaign->isActive()) {
+        if (! $invite || ! $invite->campaign || ! $invite->campaign->isActive()) {
             return Inertia::render('Tenant/Survey/Invalid', [
                 'reason' => 'link_invalido',
             ]);
@@ -44,7 +44,7 @@ class SurveyController extends Controller
 
         $invite = SurveyInvite::where('token', $token)->first();
 
-        if (! $invite || $invite->isAnswered() || ! $invite->campaign->isActive()) {
+        if (! $invite || $invite->isAnswered() || ! $invite->campaign || ! $invite->campaign->isActive()) {
             return redirect()->back();
         }
 
@@ -59,7 +59,7 @@ class SurveyController extends Controller
     {
         $invite = SurveyInvite::with('campaign')->where('token', $token)->first();
 
-        if (! $invite || $invite->isAnswered() || ! $invite->campaign->isActive()) {
+        if (! $invite || $invite->isAnswered() || ! $invite->campaign || ! $invite->campaign->isActive()) {
             return Inertia::render('Tenant/Survey/Invalid', [
                 'reason' => 'link_invalido',
             ]);

@@ -154,7 +154,7 @@ class CampaignController extends Controller
         });
 
         // Dispatch job to send emails
-        SendCampaignInvites::dispatch($campaign->id, $invites->pluck('id')->toArray(), tenant('id'));
+        SendCampaignInvites::dispatch($invites->pluck('id')->toArray(), tenant('id'));
 
         return back()->with('success', "Envio de {$collaborators->count()} convites iniciado em background.");
     }

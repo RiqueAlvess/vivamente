@@ -41,10 +41,15 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 # Configure PHP-FPM pool to listen on all interfaces (required for nginx in separate container)
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
+# Copy entrypoint script
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Set working directory
 WORKDIR /var/www
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
