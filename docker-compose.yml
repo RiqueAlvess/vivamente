@@ -15,6 +15,12 @@ services:
       - nr1_network
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"$s=fsockopen('127.0.0.1',9000,$e,$m,1);if(!$s){exit(1);}fclose($s);\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   nginx:
     image: nginx:1.25-alpine
@@ -26,7 +32,8 @@ services:
       - .:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     networks:
       - nr1_network
 

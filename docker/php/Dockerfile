@@ -38,6 +38,9 @@ RUN apk add --no-cache $PHPIZE_DEPS \
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
+# Configure PHP-FPM pool to listen on all interfaces (required for nginx in separate container)
+COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # Set working directory
 WORKDIR /var/www
 
