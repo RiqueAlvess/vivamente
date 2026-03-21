@@ -21,6 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant.auth' => App\Http\Middleware\EnsureTenantUser::class,
             'central.auth' => App\Http\Middleware\EnsureCentralUser::class,
         ]);
+
+        $middleware->redirectGuestsTo(function ($request) {
+            $centralDomains = config('tenancy.central_domains', ['localhost']);
+            if (in_array($request->getHost(), $centralDomains)) {
+                return route('central.login');
+            }
+            return route('tenant.login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
