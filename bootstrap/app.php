@@ -16,6 +16,23 @@ return Application::configure(basePath: dirname(__DIR__))
             Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        // Ensure PreventAccessFromCentralDomains runs before Authenticate so
+        // central-domain requests to tenant-only routes get 403 (not a login redirect).
+        $middleware->priority([
+            \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+            \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+            \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+            \Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Illuminate\Auth\Middleware\Authorize::class,
+        ]);
+
         $middleware->alias([
             'role' => App\Http\Middleware\CheckRole::class,
             'tenant.auth' => App\Http\Middleware\EnsureTenantUser::class,

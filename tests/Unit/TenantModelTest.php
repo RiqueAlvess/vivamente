@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Tenant;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class TenantModelTest extends TestCase
 {
