@@ -60,7 +60,7 @@ class LoginController extends Controller
         $request->session()->regenerate();
 
         if ($user->isGlobalAdmin()) {
-            return redirect()->intended(route('admin.dashboard'));
+            return redirect(route('admin.dashboard'));
         }
 
         return redirect()->intended(route('dashboard'));
