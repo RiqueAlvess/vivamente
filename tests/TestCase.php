@@ -15,6 +15,9 @@ abstract class TestCase extends BaseTestCase
      */
     protected function migrateUsing(): array
     {
-        return ['--path' => 'database/migrations/central'];
+        return [
+            '--path'     => database_path('migrations/central'),
+            '--realpath' => true,
+        ];
     }
 }
