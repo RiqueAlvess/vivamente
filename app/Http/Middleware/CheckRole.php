@@ -4,17 +4,16 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        $user = Auth::guard('tenant')->user();
+        $user = $request->user();
 
         if (! $user) {
-            return redirect()->route('tenant.login');
+            return redirect()->route('login');
         }
 
         foreach ($roles as $role) {

@@ -20,20 +20,6 @@ return [
             'search_path' => env('DB_SCHEMA', 'public'),
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
-
-        'tenant' => [
-            'driver' => 'pgsql',
-            'host' => env('TENANCY_DB_HOST', env('DB_HOST', '127.0.0.1')),
-            'port' => env('TENANCY_DB_PORT', env('DB_PORT', '5432')),
-            'database' => env('DB_DATABASE', 'postgres'),
-            'username' => env('TENANCY_DB_USERNAME', env('DB_USERNAME', 'postgres')),
-            'password' => env('TENANCY_DB_PASSWORD', env('DB_PASSWORD', '')),
-            'charset' => 'utf8',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
-        ],
     ],
 
     'migrations' => [
@@ -45,7 +31,7 @@ return [
         'client' => env('REDIS_CLIENT', 'phpredis'),
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
         'default' => [
             'url' => env('REDIS_URL'),

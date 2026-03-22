@@ -2,53 +2,43 @@
 
 namespace Database\Seeders;
 
-use App\Models\Tenant;
-use App\Models\Tenant\Collaborator;
-use App\Models\Tenant\LeaderHierarchy;
-use App\Models\Tenant\User as TenantUser;
+use App\Models\Collaborator;
+use App\Models\Company;
+use App\Models\LeaderHierarchy;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DemoTenantSeeder extends Seeder
 {
     public function run(): void
     {
-        $centralDomain = config('tenancy.central_domains')[0];
-
-        // Create demo tenant
-        $tenant = Tenant::firstOrCreate(
+        // Criar empresa demo
+        $company = Company::firstOrCreate(
             ['slug' => 'demo'],
             [
-                'id' => Str::uuid(),
                 'name' => 'Empresa Demo',
                 'slug' => 'demo',
                 'is_active' => true,
             ]
         );
 
-        // Create domain for tenant
-        $domain = 'demo.' . $centralDomain;
-        $tenant->domains()->firstOrCreate(['domain' => $domain]);
+        $this->command->info("Empresa demo criada: {$company->name} (ID: {$company->id})");
 
-        $this->command->info("Tenant demo criado: {$domain}");
-
-        // Initialize tenant context and create users
-        tenancy()->initialize($tenant);
-
-        // Create collaborators (including the hierarchy for the leader)
+        // Criar colaboradores
         $collaborators = [
-            ['nome' => 'Ana Silva', 'email' => 'ana.silva@demo.com', 'unidade' => 'Matriz', 'setor' => 'TI', 'cargo' => 'Analista', 'genero' => 'Feminino', 'faixa_etaria' => '25-34'],
-            ['nome' => 'Carlos Souza', 'email' => 'carlos.souza@demo.com', 'unidade' => 'Matriz', 'setor' => 'TI', 'cargo' => 'Desenvolvedor', 'genero' => 'Masculino', 'faixa_etaria' => '25-34'],
-            ['nome' => 'Mariana Costa', 'email' => 'mariana.costa@demo.com', 'unidade' => 'Matriz', 'setor' => 'Financeiro', 'cargo' => 'Analista Financeiro', 'genero' => 'Feminino', 'faixa_etaria' => '35-44'],
-            ['nome' => 'Pedro Lima', 'email' => 'pedro.lima@demo.com', 'unidade' => 'Filial SP', 'setor' => 'Vendas', 'cargo' => 'Vendedor', 'genero' => 'Masculino', 'faixa_etaria' => '18-24'],
-            ['nome' => 'Fernanda Rocha', 'email' => 'fernanda.rocha@demo.com', 'unidade' => 'Filial SP', 'setor' => 'Vendas', 'cargo' => 'Coordenador', 'genero' => 'Feminino', 'faixa_etaria' => '35-44'],
+            ['nome' => 'Ana Silva',       'email' => 'ana.silva@demo.com',       'unidade' => 'Matriz',    'setor' => 'TI',         'cargo' => 'Analista',            'genero' => 'Feminino',  'faixa_etaria' => '25-34'],
+            ['nome' => 'Carlos Souza',    'email' => 'carlos.souza@demo.com',    'unidade' => 'Matriz',    'setor' => 'TI',         'cargo' => 'Desenvolvedor',       'genero' => 'Masculino', 'faixa_etaria' => '25-34'],
+            ['nome' => 'Mariana Costa',   'email' => 'mariana.costa@demo.com',   'unidade' => 'Matriz',    'setor' => 'Financeiro', 'cargo' => 'Analista Financeiro', 'genero' => 'Feminino',  'faixa_etaria' => '35-44'],
+            ['nome' => 'Pedro Lima',      'email' => 'pedro.lima@demo.com',      'unidade' => 'Filial SP', 'setor' => 'Vendas',     'cargo' => 'Vendedor',            'genero' => 'Masculino', 'faixa_etaria' => '18-24'],
+            ['nome' => 'Fernanda Rocha',  'email' => 'fernanda.rocha@demo.com',  'unidade' => 'Filial SP', 'setor' => 'Vendas',     'cargo' => 'Coordenador',         'genero' => 'Feminino',  'faixa_etaria' => '35-44'],
         ];
 
         foreach ($collaborators as $c) {
             Collaborator::firstOrCreate(
-                ['email' => $c['email']],
+                ['company_id' => $company->id, 'email' => $c['email']],
                 [
+                    'company_id' => $company->id,
                     'name' => $c['nome'],
                     'unidade' => $c['unidade'],
                     'setor' => $c['setor'],
@@ -60,10 +50,11 @@ class DemoTenantSeeder extends Seeder
             );
         }
 
-        // Create RH user
-        TenantUser::firstOrCreate(
+        // Criar usuário RH
+        User::firstOrCreate(
             ['email' => 'rh@demo.com'],
             [
+                'company_id' => $company->id,
                 'name' => 'Usuário RH Demo',
                 'password' => Hash::make('rh@123'),
                 'role' => 'rh',
@@ -71,10 +62,11 @@ class DemoTenantSeeder extends Seeder
             ]
         );
 
-        // Create Leader user
-        $leader = TenantUser::firstOrCreate(
+        // Criar usuário Líder
+        $leader = User::firstOrCreate(
             ['email' => 'lider@demo.com'],
             [
+                'company_id' => $company->id,
                 'name' => 'Líder Demo',
                 'password' => Hash::make('lider@123'),
                 'role' => 'leader',
@@ -82,14 +74,13 @@ class DemoTenantSeeder extends Seeder
             ]
         );
 
-        // Assign hierarchy Matriz/TI to leader
+        // Atribuir hierarquia Matriz/TI ao líder
         LeaderHierarchy::firstOrCreate(
             ['user_id' => $leader->id, 'unidade' => 'Matriz', 'setor' => 'TI'],
+            ['company_id' => $company->id]
         );
 
-        tenancy()->end();
-
-        $this->command->info("Tenant demo populado com sucesso.");
+        $this->command->info("Empresa demo populada com sucesso.");
         $this->command->info("  RH:    rh@demo.com / rh@123");
         $this->command->info("  Líder: lider@demo.com / lider@123 (Hierarquia: Matriz/TI)");
     }

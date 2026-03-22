@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Tenant\Campaign;
-use App\Models\Tenant\SurveyInvite;
-use App\Models\Tenant\SurveyResponse;
+use App\Models\Campaign;
+use App\Models\SurveyInvite;
+use App\Models\SurveyResponse;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
