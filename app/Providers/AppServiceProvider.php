@@ -12,6 +12,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->loadMigrationsFrom(database_path('migrations/central'));
+
         $this->app->bind(
             \App\Services\HseItAnalyticsService::class,
             \App\Services\HseItAnalyticsService::class,
