@@ -64,8 +64,15 @@ class TenancyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->bootEvents();
-        $this->mapRoutes();
         $this->makeTenancyMiddlewareHighestPriority();
+
+        // Register tenant routes after all providers have booted so that
+        // central domain routes (from routes/web.php) are registered first.
+        // This ensures central routes take precedence over tenant routes when
+        // both match the same path (e.g. GET /login on localhost).
+        $this->app->booted(function () {
+            $this->mapRoutes();
+        });
     }
 
     protected function bootEvents(): void
