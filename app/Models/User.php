@@ -3,17 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-/**
- * Central (global admin) user model.
- */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
     protected $fillable = [
+        'company_id',
         'name',
         'email',
         'password',
@@ -38,12 +38,39 @@ class User extends Authenticatable
         ];
     }
 
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function hierarchies(): HasMany
+    {
+        return $this->hasMany(LeaderHierarchy::class);
+    }
+
+    public function importJobs(): HasMany
+    {
+        return $this->hasMany(ImportJob::class);
+    }
+
+    public function isGlobalAdmin(): bool
+    {
+        return $this->role === 'global_admin';
+    }
+
+    public function isRh(): bool
+    {
+        return $this->role === 'rh';
+    }
+
+    public function isLeader(): bool
+    {
+        return $this->role === 'leader';
+    }
+
     public function isLocked(): bool
     {
-        if ($this->locked_until && $this->locked_until->isFuture()) {
-            return true;
-        }
-        return false;
+        return $this->locked_until && $this->locked_until->isFuture();
     }
 
     public function incrementLoginAttempts(): void
